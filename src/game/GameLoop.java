@@ -32,7 +32,7 @@ public class GameLoop {
                     countOfSec++;
                     countOfFrames = 0;
                 }
-                System.out.println(countOfSec);
+                Player.Update();
             }
         }
     }

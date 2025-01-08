@@ -8,8 +8,8 @@ public class Main {
 	public static UserInputService userInputService;
 
     public static void main(String[] args) {
-		frame = new Frame("NaturalSelection");	
 		userInputService = new UserInputService();
+		frame = new Frame("NaturalSelection");	
 		gameLoop = new GameLoop();
     }
 }
