@@ -141,6 +141,10 @@ public class Game extends Canvas implements Runnable {
     button.id = ID.Button;
     button.isChangingByZoom = true;
     handler.addObject(button);
+
+    Bacteria bacteria = new Bacteria(100, 100, Color.blue, 1, 1, 100, 0, handler);
+    bacteria.id = ID.Bacteria;
+    handler.addObject(bacteria);
   }
 
   public static void main(String[] args) {

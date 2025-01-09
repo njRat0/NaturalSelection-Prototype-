@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.Random;
 
 public class Bacteria extends GameObject{
     protected Color color;
@@ -19,8 +20,11 @@ public class Bacteria extends GameObject{
     private GameObject gameObjectOfCurTarget;
     private int counterOfSec;
     private int counterOfmSec;
+    private static final int collectingRadius = 5;
 
     private Handler handler;
+
+    private Random r;
 
     public Bacteria(int x, int y, Color color, float ms, float size, int visionRadius, int generation, Handler handler){
         super(x, y);
@@ -33,6 +37,7 @@ public class Bacteria extends GameObject{
         maxFood = size * 30;
         curFood = maxFood;
         costOfFood = (moveSpeed/4) + (size/4) + (visionRadius/50)+(mutationForce/5);
+        r = new Random();
     }
     
     @Override
@@ -44,8 +49,13 @@ public class Bacteria extends GameObject{
             curFood -= costOfFood;
         }
 
+        if(curFood <= 0){
+            handler.removeObject(this);
+        }
+
         if(isTarget == false){
             if(curTarget == null){
+                System.out.println("works");
                 for(GameObject food : handler.getByID(ID.Food)){
                     if(food.isAlive){
                         if(food.getX() - x < visionRadius && food.getX() - x > -visionRadius){
@@ -60,22 +70,62 @@ public class Bacteria extends GameObject{
                 }
 
                 if(curTarget == null){
+                    int xTarget = r.nextInt(-visionRadius, visionRadius) + x;
+                    int yTarget = r.nextInt(-visionRadius, visionRadius) + y;
+                    System.out.println("x: " + xTarget);
+                    System.out.println("y: " + yTarget);
 
+                    if(xTarget < 0)xTarget = 0;
+                    if(yTarget < 0)yTarget = 0;
+                    isTarget = true;
+                    curTarget = new Point(xTarget, yTarget);
+                    gameObjectOfCurTarget = null;
                 }
             }
         }
         else{
             if(gameObjectOfCurTarget != null){
-                
-
                 if(gameObjectOfCurTarget.isAlive == false){
                     isTarget = false;
                     gameObjectOfCurTarget = null;
                     curTarget = null;
                 }
+
+                if(x >= curTarget.getX() - collectingRadius && x <= curTarget.getX() + collectingRadius && y >= curTarget.getY() - collectingRadius && y <= curTarget.getY() + collectingRadius){
+                    curFood += Food.givenFoodAmount;
+                    if(curFood > maxFood ) curFood = maxFood;
+                    gameObjectOfCurTarget.isAlive = false;
+                }
+                else{
+                    float deltaX = (float)curTarget.getX() - x;
+                    float deltaY = (float)curTarget.getY() - y;
+                    double angle = Math.atan2( deltaY, deltaX );
+                    x += moveSpeed * Math.cos( angle );
+                    y += moveSpeed * Math.sin( angle );
+                }
             }
             else{
-                //<- stop here
+                
+                float deltaX = (float)curTarget.getX() - x;
+                float deltaY = (float)curTarget.getY() - y;
+                if(deltaX<0) deltaX *= -1;
+                if(deltaY<0) deltaY *= -1;
+                System.out.println("x " + deltaX);
+                System.out.println("y " + deltaY);
+
+                if(deltaX <= collectingRadius && deltaY <= collectingRadius){
+                    curTarget = null;
+                    isTarget = false;
+                    gameObjectOfCurTarget = null;
+                    System.out.println("works2");
+                }
+                else{
+                    float deltaX1 = (float)curTarget.getX() - x;
+                    float deltaY1 = (float)curTarget.getY() - y;
+                    double angle = Math.atan2( deltaY1, deltaX1 );
+                    x += moveSpeed * Math.cos( angle );
+                    y += moveSpeed * Math.sin( angle );
+                }
             }
 
 
@@ -85,7 +135,7 @@ public class Bacteria extends GameObject{
     @Override
     public void render(Graphics g) {
         g.setColor(color);
-        g.fillOval(x, y, (int)(size * 50 * Camera.screenZoom), (int)(size * 50 * Camera.screenZoom));
+        g.fillOval(x - Camera.worldPosX, y - Camera.worldPosY, (int)(size * 50 * Camera.screenZoom), (int)(size * 50 * Camera.screenZoom));
     }
 
 }

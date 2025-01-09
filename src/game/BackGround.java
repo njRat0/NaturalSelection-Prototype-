@@ -12,15 +12,15 @@ public class BackGround extends GameObject{
 
     @Override
     public void tick() {
-        if(Camera.wasCameraMoved == true){
-            x = -Camera.worldPosX;
-            y = -Camera.worldPosY;
-        }
+        // if(Camera.wasCameraMoved == true){
+        //     x = ;
+        //     y = ;
+        // }
     }
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(image, x, y, (int)(image.getWidth() * Camera.screenZoom), (int)(image.getHeight() * Camera.screenZoom), null);
+        g.drawImage(image, x-Camera.worldPosX, y-Camera.worldPosY, (int)(image.getWidth() * Camera.screenZoom), (int)(image.getHeight() * Camera.screenZoom), null);
     }
 
 }

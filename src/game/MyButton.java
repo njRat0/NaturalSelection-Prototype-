@@ -35,7 +35,6 @@ public  class MyButton extends GameObject{
     }
 
     public void tick() {
-        System.out.println("ssss");
         if(isChangingByZoom && Camera.wasCameraMoved){
             rectangleOfButton.width = (int)(w * Camera.screenZoom);
             rectangleOfButton.height = (int)(h * Camera.screenZoom);
