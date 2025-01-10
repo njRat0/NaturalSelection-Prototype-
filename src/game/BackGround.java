@@ -20,7 +20,7 @@ public class BackGround extends GameObject{
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(image, x-Camera.worldPosX, y-Camera.worldPosY, (int)(image.getWidth() * Camera.screenZoom), (int)(image.getHeight() * Camera.screenZoom), null);
+        g.drawImage(image, (int)((x-Camera.worldPosX)*(Camera.screenZoom)), (int)((y-Camera.worldPosY)*(Camera.screenZoom)), (int)(image.getWidth() * Camera.screenZoom), (int)(image.getHeight() * Camera.screenZoom), null);
     }
 
 }

@@ -22,7 +22,7 @@ public class Game extends Canvas implements Runnable {
 
   private Camera camera;
 
-  private int amountOfSpawnFood = 35;
+  private int amountOfSpawnFood = 100;
   private Random r = new Random();
 
   public Game(){
@@ -123,7 +123,7 @@ public class Game extends Canvas implements Runnable {
 
 
   //Runs every frame
-  private int counterOfTicks = 10*60*1000;
+  private int counterOfTicks = 10*1000;
   public void tick(){
     handler.tick();
     gui.tick();
@@ -131,11 +131,12 @@ public class Game extends Canvas implements Runnable {
     if(MouseInput.scrollUp) MouseInput.scrollUp = false;
 
     counterOfTicks++;
-    if(counterOfTicks >= 10*60*1000){
+    if(counterOfTicks >= 60*10){
       counterOfTicks = 0;
       for(int i = 0; i < amountOfSpawnFood; i++){
-        handler.addObject(new Food(r.nextInt(3840), r.nextInt(2160), handler, 10));
-        handler.getObject(i).setID(ID.Food);
+        GameObject tempObject = new Food(r.nextInt(3830), r.nextInt(2150), handler, 10);
+        tempObject.id = ID.Food;
+        handler.addObject(tempObject);
       }
     }
   }
@@ -156,7 +157,7 @@ public class Game extends Canvas implements Runnable {
     button.isChangingByZoom = true;
     handler.addObject(button);
 
-    Bacteria bacteria = new Bacteria(100, 100, Color.blue, 1, 1, 100, 0, handler);
+    Bacteria bacteria = new Bacteria(1000, 100, Color.blue, 1, 1, 400, 1, 0, handler);
     bacteria.id = ID.Bacteria;
     handler.addObject(bacteria);
   }

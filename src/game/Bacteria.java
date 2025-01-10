@@ -7,7 +7,7 @@ public class Bacteria extends GameObject{
     protected Color color;
     protected float moveSpeed;
     protected float size;
-    protected float mutationForce;
+    private float mutationForce;
     private float curFood;
     private float maxFood;
     private float costOfFood;
@@ -26,22 +26,24 @@ public class Bacteria extends GameObject{
 
     private Random r;
 
-    public Bacteria(int x, int y, Color color, float ms, float size, int visionRadius, int generation, Handler handler){
+    public Bacteria(int x, int y, Color color, float ms, float size, int visionRadius, float mutationForce, int generation, Handler handler){
         super(x, y);
         this.color = color;
         this.moveSpeed = ms;
         this.size = size;
         this.visionRadius = visionRadius;
         this.generation = generation;
+        this.mutationForce = mutationForce;
         this.handler = handler;
-        maxFood = size * 30;
+        maxFood = size * 40;
         curFood = maxFood;
-        costOfFood = (moveSpeed/4) + (size/4) + (visionRadius/50)+(mutationForce/5);
+        costOfFood = (moveSpeed/8) + (size/8) + (visionRadius/200)+(mutationForce/10);
         r = new Random();
     }
     
     @Override
     public void tick() {
+        System.out.println(curFood);
         counterOfmSec++;
         if(counterOfmSec >= 60){
             counterOfmSec = 0;
@@ -53,20 +55,27 @@ public class Bacteria extends GameObject{
             handler.removeObject(this);
         }
 
+        if(counterOfSec >= 5 && curFood == maxFood){
+            curFood/=2;
+            Bacteria bacteria = new Bacteria(x + r.nextInt(50), y + r.nextInt(50), Color.blue, moveSpeed + r.nextFloat(1) * mutationForce, size + r.nextFloat(0.5f) * mutationForce, (int)(visionRadius + r.nextInt(50) * mutationForce), mutationForce+ r.nextFloat(0.1f) * mutationForce, generation+1, handler);
+            bacteria.id = ID.Bacteria;
+            handler.addObject(bacteria);
+        }
+
         if(isTarget == false){
             if(curTarget == null){
+                float lowestDistance = visionRadius + 1;
                 for(GameObject food : handler.getByID(ID.Food)){
                     if(food.isAlive == true){
                         
                         float deltaX = (float)food.getX() - x;
                         float deltaY = (float)food.getY() - y;
                         float dis = (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-                        if(dis < visionRadius){
-                            System.out.println("sssss");
+                        if(dis < lowestDistance){
+                            lowestDistance = dis;
                             isTarget = true;
                             curTarget = new Point(food.getX(), food.getY());
                             gameObjectOfCurTarget = food;
-                            break;
                         }
                     }
                 }
@@ -142,11 +151,11 @@ public class Bacteria extends GameObject{
     @Override
     public void render(Graphics g) {
         g.setColor(color);
-        g.fillOval(x - Camera.worldPosX, y - Camera.worldPosY, (int)(size * 50 * Camera.screenZoom), (int)(size * 50 * Camera.screenZoom));
+        g.fillOval( (int)((x-Camera.worldPosX)*(Camera.screenZoom)), (int)((y-Camera.worldPosY)*(Camera.screenZoom)), (int)(size * 50 * Camera.screenZoom), (int)(size * 50 * Camera.screenZoom));
 
         if(curTarget != null){
             g.setColor(Color.red);
-            g.fillOval((int)curTarget.getX(),(int)curTarget.getY(), 50,50);
+            g.fillOval( (int)((curTarget.getX() + 20-Camera.worldPosX)*(Camera.screenZoom)), (int)((curTarget.getY() + 20 -Camera.worldPosY)*(Camera.screenZoom)), (int)(20 * Camera.screenZoom),(int)(20 * Camera.screenZoom));
         }
         
     }

@@ -38,8 +38,8 @@ public  class MyButton extends GameObject{
         if(isChangingByZoom && Camera.wasCameraMoved){
             rectangleOfButton.width = (int)(w * Camera.screenZoom);
             rectangleOfButton.height = (int)(h * Camera.screenZoom);
-            x = -Camera.worldPosX;
-            y = -Camera.worldPosY;
+            x = (int)(-Camera.worldPosX * Camera.screenZoom);
+            y = (int)(-Camera.worldPosY * Camera.screenZoom);
             rectangleOfButton.y = y;
             rectangleOfButton.x = x;
         }

@@ -32,8 +32,11 @@ public class Handler {
   }
 
   public void render(Graphics g){
+    for(GameObject object : getByID(ID.BackGround)){
+      object.render(g);
+    }
     for(int i = 0; i < gameObjects.size(); i++){
-      if(gameObjects.get(i).getID() != ID.Food){
+      if(gameObjects.get(i).getID() != ID.Food && gameObjects.get(i).getID() != ID.BackGround){
         gameObjects.get(i).render(g);
       }
     }

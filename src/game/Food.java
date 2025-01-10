@@ -19,7 +19,7 @@ public class Food extends GameObject{
     @Override
     public void tick() {
         counterOfMSec++;
-        if(counterOfMSec >= secOfLife*60*1000){
+        if(counterOfMSec >= secOfLife*60){
             isAlive = false;
         }
         if(isRemoving == true){
@@ -33,7 +33,7 @@ public class Food extends GameObject{
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(image, (int)(x-Camera.worldPosX*(Camera.screenZoom)), (int)(y-Camera.worldPosY*(Camera.screenZoom)), (int)(image.getWidth() * Camera.screenZoom), (int)(image.getHeight() * Camera.screenZoom), null);
+        g.drawImage(image, (int)((x-Camera.worldPosX)*(Camera.screenZoom)), (int)((y-Camera.worldPosY)*(Camera.screenZoom)), (int)(image.getWidth() * Camera.screenZoom), (int)(image.getHeight() * Camera.screenZoom), null);
     }
 
 }
