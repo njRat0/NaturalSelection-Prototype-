@@ -55,16 +55,18 @@ public class Bacteria extends GameObject{
 
         if(isTarget == false){
             if(curTarget == null){
-                System.out.println("works");
                 for(GameObject food : handler.getByID(ID.Food)){
-                    if(food.isAlive){
-                        if(food.getX() - x < visionRadius && food.getX() - x > -visionRadius){
-                            if(food.getY() - y < visionRadius && food.getY() - y > -visionRadius){
-                                isTarget = true;
-                                curTarget = new Point(food.getX(), food.getY());
-                                gameObjectOfCurTarget = food;
-                                break;
-                            }
+                    if(food.isAlive == true){
+                        
+                        float deltaX = (float)food.getX() - x;
+                        float deltaY = (float)food.getY() - y;
+                        float dis = (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+                        if(dis < visionRadius){
+                            System.out.println("sssss");
+                            isTarget = true;
+                            curTarget = new Point(food.getX(), food.getY());
+                            gameObjectOfCurTarget = food;
+                            break;
                         }
                     }
                 }
@@ -72,8 +74,6 @@ public class Bacteria extends GameObject{
                 if(curTarget == null){
                     int xTarget = r.nextInt(-visionRadius, visionRadius) + x;
                     int yTarget = r.nextInt(-visionRadius, visionRadius) + y;
-                    System.out.println("x: " + xTarget);
-                    System.out.println("y: " + yTarget);
 
                     if(xTarget < 0)xTarget = 0;
                     if(yTarget < 0)yTarget = 0;
@@ -85,46 +85,53 @@ public class Bacteria extends GameObject{
         }
         else{
             if(gameObjectOfCurTarget != null){
-                if(gameObjectOfCurTarget.isAlive == false){
-                    isTarget = false;
-                    gameObjectOfCurTarget = null;
-                    curTarget = null;
-                }
+                float deltaX = (float)curTarget.getX() - x;
+                float deltaY = (float)curTarget.getY() - y;
+                float dis = (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-                if(x >= curTarget.getX() - collectingRadius && x <= curTarget.getX() + collectingRadius && y >= curTarget.getY() - collectingRadius && y <= curTarget.getY() + collectingRadius){
+                if(dis < collectingRadius){
                     curFood += Food.givenFoodAmount;
                     if(curFood > maxFood ) curFood = maxFood;
                     gameObjectOfCurTarget.isAlive = false;
                 }
                 else{
-                    float deltaX = (float)curTarget.getX() - x;
-                    float deltaY = (float)curTarget.getY() - y;
-                    double angle = Math.atan2( deltaY, deltaX );
-                    x += moveSpeed * Math.cos( angle );
-                    y += moveSpeed * Math.sin( angle );
+                    float deltaX1 = (float)curTarget.getX() - x;
+                    float deltaY1 = (float)curTarget.getY() - y;
+                    double angle = Math.atan2( deltaY1, deltaX1 );
+                    float movingForceX = (float)(moveSpeed * Math.cos( angle ));
+                    float movingForceY = (float)(moveSpeed * Math.sin( angle ));
+                    x += movingForceX < 0 ? (int)(movingForceX - 0.5f) : (int)(movingForceX + 0.5f);
+                    y += movingForceY < 0 ? (int)(movingForceY - 0.5f) : (int)(movingForceY + 0.5f);
+                }
+
+                if(gameObjectOfCurTarget.isAlive == false){
+                    isTarget = false;
+                    gameObjectOfCurTarget = null;
+                    curTarget = null;
                 }
             }
             else{
                 
+                
                 float deltaX = (float)curTarget.getX() - x;
                 float deltaY = (float)curTarget.getY() - y;
-                if(deltaX<0) deltaX *= -1;
-                if(deltaY<0) deltaY *= -1;
-                System.out.println("x " + deltaX);
-                System.out.println("y " + deltaY);
+                float dis = (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-                if(deltaX <= collectingRadius && deltaY <= collectingRadius){
+                if(dis < collectingRadius){
                     curTarget = null;
                     isTarget = false;
                     gameObjectOfCurTarget = null;
                     System.out.println("works2");
                 }
                 else{
+
                     float deltaX1 = (float)curTarget.getX() - x;
                     float deltaY1 = (float)curTarget.getY() - y;
                     double angle = Math.atan2( deltaY1, deltaX1 );
-                    x += moveSpeed * Math.cos( angle );
-                    y += moveSpeed * Math.sin( angle );
+                    float movingForceX = (float)(moveSpeed * Math.cos( angle ));
+                    float movingForceY = (float)(moveSpeed * Math.sin( angle ));
+                    x += movingForceX < 0 ? (int)(movingForceX - 0.5f) : (int)(movingForceX + 0.5f);
+                    y += movingForceY < 0 ? (int)(movingForceY - 0.5f) : (int)(movingForceY + 0.5f);
                 }
             }
 
@@ -136,6 +143,11 @@ public class Bacteria extends GameObject{
     public void render(Graphics g) {
         g.setColor(color);
         g.fillOval(x - Camera.worldPosX, y - Camera.worldPosY, (int)(size * 50 * Camera.screenZoom), (int)(size * 50 * Camera.screenZoom));
-    }
 
+        if(curTarget != null){
+            g.setColor(Color.red);
+            g.fillOval((int)curTarget.getX(),(int)curTarget.getY(), 50,50);
+        }
+        
+    }
 }

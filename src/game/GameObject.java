@@ -5,7 +5,7 @@ public abstract class GameObject{
   protected int x,y,w,h;
   protected ID id;
   public boolean solid;
-  public boolean isAlive;
+  public boolean isAlive = true;
 
   public GameObject(int x, int y, int w, int h, boolean s){
     this.x = x;

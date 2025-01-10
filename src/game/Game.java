@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.image.*;
+import java.util.Random;
 import java.awt.Event;
+import java.util.Random;
 
 public class Game extends Canvas implements Runnable {
 
@@ -19,6 +21,9 @@ public class Game extends Canvas implements Runnable {
   public KeyInput ki;
 
   private Camera camera;
+
+  private int amountOfSpawnFood = 35;
+  private Random r = new Random();
 
   public Game(){
     size = new Dimension(1000, 600);
@@ -106,7 +111,6 @@ public class Game extends Canvas implements Runnable {
 
     g.setColor(new Color(190, 190, 190));
     g.fillRect(0, 0, size.width, size.height);
-    
 
 
     handler.render(g);
@@ -119,11 +123,21 @@ public class Game extends Canvas implements Runnable {
 
 
   //Runs every frame
+  private int counterOfTicks = 10*60*1000;
   public void tick(){
     handler.tick();
     gui.tick();
     if(MouseInput.scrollDown) MouseInput.scrollDown = false;
     if(MouseInput.scrollUp) MouseInput.scrollUp = false;
+
+    counterOfTicks++;
+    if(counterOfTicks >= 10*60*1000){
+      counterOfTicks = 0;
+      for(int i = 0; i < amountOfSpawnFood; i++){
+        handler.addObject(new Food(r.nextInt(3840), r.nextInt(2160), handler, 10));
+        handler.getObject(i).setID(ID.Food);
+      }
+    }
   }
 
 

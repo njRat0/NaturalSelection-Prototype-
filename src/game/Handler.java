@@ -33,8 +33,14 @@ public class Handler {
 
   public void render(Graphics g){
     for(int i = 0; i < gameObjects.size(); i++){
-      gameObjects.get(i).render(g);
+      if(gameObjects.get(i).getID() != ID.Food){
+        gameObjects.get(i).render(g);
+      }
     }
+    for(GameObject object : getByID(ID.Food)){
+      object.render(g);
+    }
+    
   }
 
   public void tick(){
@@ -43,4 +49,7 @@ public class Handler {
     }
   }
 
+  public int getSize(){
+    return gameObjects.size();
+  }
 }
