@@ -55,4 +55,8 @@ public class Handler {
   public int getSize(){
     return gameObjects.size();
   }
+
+  public void Clear(){
+    gameObjects.clear();
+  }
 }

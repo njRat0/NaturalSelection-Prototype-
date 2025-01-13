@@ -21,9 +21,12 @@ public class Game extends Canvas implements Runnable {
   public KeyInput ki;
 
   private Camera camera;
+  public static int maxGen = 0;
 
   private int amountOfSpawnFood = 100;
   private Random r = new Random();
+
+  public static int curLayout = 0; // -1 - pause;  0 - simulation; 1 - cur living; 2 - svg time life; 3 - avg speed; 4 - avg size; 5 - avg mutation force; 6 - avg vision radius
 
   public Game(){
     size = new Dimension(1000, 600);
@@ -36,7 +39,7 @@ public class Game extends Canvas implements Runnable {
 
     mmi = new MouseMotionInput(handler);
     mi = new MouseInput(handler);
-    ki = new KeyInput(handler);
+    ki = new KeyInput(handler, this);
 
     this.setFocusable(true);
 
@@ -66,6 +69,7 @@ public class Game extends Canvas implements Runnable {
   @Override
   public void run() {
     this.requestFocus();
+    DataStore.init();
     long lastTime = System.nanoTime();
     double amountOfTicks = 60.0;
     double ns = 1000000000 / amountOfTicks;
@@ -112,9 +116,10 @@ public class Game extends Canvas implements Runnable {
     g.setColor(new Color(190, 190, 190));
     g.fillRect(0, 0, size.width, size.height);
 
-
-    handler.render(g);
-    gui.render(g);
+    if(curLayout == 0 || curLayout == -1){
+      handler.render(g);
+      gui.render(g);
+    }
 
     //////////////////////////////////
     g.dispose();
@@ -125,22 +130,41 @@ public class Game extends Canvas implements Runnable {
   //Runs every frame
   private int counterOfTicks = 10*1000;
   public void tick(){
-    handler.tick();
-    gui.tick();
-    if(MouseInput.scrollDown) MouseInput.scrollDown = false;
-    if(MouseInput.scrollUp) MouseInput.scrollUp = false;
+    if(curLayout == 0){
+      handler.tick();
+      //gui.tick();
+      if(MouseInput.scrollDown) MouseInput.scrollDown = false;
+      if(MouseInput.scrollUp) MouseInput.scrollUp = false;
 
-    counterOfTicks++;
-    if(counterOfTicks >= 60*10){
-      counterOfTicks = 0;
-      for(int i = 0; i < amountOfSpawnFood; i++){
-        GameObject tempObject = new Food(r.nextInt(3830), r.nextInt(2150), handler, 10);
-        tempObject.id = ID.Food;
-        handler.addObject(tempObject);
+      counterOfTicks++;
+      if(counterOfTicks >= 60*10){
+        counterOfTicks = 0;
+        for(int i = 0; i < amountOfSpawnFood; i++){
+          GameObject tempObject = new Food(r.nextInt(3830), r.nextInt(2150), handler, 10);
+          tempObject.id = ID.Food;
+          handler.addObject(tempObject);
+        }
+      }
+    }
+    else if(curLayout == -1){
+      handler.getByID(ID.Camera).get(0).tick();
+      if(MouseInput.scrollDown) MouseInput.scrollDown = false;
+      if(MouseInput.scrollUp) MouseInput.scrollUp = false;
+
+      for(GameObject button : handler.getByID(ID.Button)){
+        button.tick();
       }
     }
   }
 
+
+  public void restart(){
+    handler.Clear();
+    curLayout = 0;
+    counterOfTicks = 10*1000;
+    maxGen = 0;
+    createWorld();
+  }
 
   //Runs before first tick method
   public void createWorld(){
@@ -157,7 +181,7 @@ public class Game extends Canvas implements Runnable {
     button.isChangingByZoom = true;
     handler.addObject(button);
 
-    Bacteria bacteria = new Bacteria(1000, 100, Color.blue, 1, 1, 400, 1, 0, handler);
+    Bacteria bacteria = new Bacteria(1000, 100, 1, 1, 400, 1, 0, handler);
     bacteria.id = ID.Bacteria;
     handler.addObject(bacteria);
   }
